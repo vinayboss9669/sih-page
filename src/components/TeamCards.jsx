@@ -10,9 +10,9 @@ This single-file React component shows a colorful, animated team/developer page 
 - Accessible markup and simple responsive grid
 */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Star } from "lucide-react";
+import { Github, Linkedin, Star, Sun, Moon } from "lucide-react";
 
 const members = [
   {
@@ -62,54 +62,100 @@ const members = [
 ];
 
 export default function TeamCards() {
+  const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setDarkMode(savedTheme === 'dark');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <section className="bg-black min-h-screen bg-gray-50 py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-6 text-center">
-          <h2 className="text-2xl font-semibold sm:text-3xl">Smart India Hackathon (SIH)</h2>
-          <h3 className="text-3xl font-extrabold sm:text-4xl mt-1">The Rumbling Code</h3>
-          <p className="mt-1 text-muted-foreground">People who build, design, and run our product.</p>
-        </header>
+    <>
+      <section className={`min-h-screen py-12 px-6 transition-all duration-500 ${darkMode ? 'bg-black' : 'bg-gray-50'}`}>
+        <div className="max-w-6xl mx-auto">
+          <header className="mb-6 text-center">
+            <h2 className={`text-2xl font-semibold sm:text-3xl transition-colors duration-300 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Smart India Hackathon (SIH)</h2>
+            <h3 className={`text-3xl font-extrabold sm:text-4xl mt-1 transition-colors duration-300 ${darkMode ? 'text-white' : 'text-gray-900'}`}>The Rumbling Code</h3>
+            <p className={`mt-1 transition-colors duration-300 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>People who build, design, and run our product.</p>
+          </header>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {members.map((m, idx) => (
-            <motion.article
-              key={m.name}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08, type: "spring", stiffness: 120 }}
-              whileHover={{ scale: 1.03 }}
-              className={`relative overflow-hidden rounded-2xl border border-transparent shadow-lg focus-within:shadow-xl bg-gradient-to-br ${m.accent} p-4 ${m.leader ? 'lg:col-span-3 sm:col-span-2 ring-4 ring-yellow-300 shadow-2xl' : ''}`}
-            >
-              <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" aria-hidden></div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {members.map((m, idx) => (
+              <motion.article
+                key={m.name}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08, type: "spring", stiffness: 120 }}
+                whileHover={{ scale: 1.03 }}
+                className={`relative overflow-hidden rounded-2xl border border-transparent shadow-lg focus-within:shadow-xl bg-gradient-to-br ${m.accent} p-4 ${m.leader ? 'lg:col-span-3 sm:col-span-2 ring-4 ring-yellow-300 shadow-2xl' : ''}`}
+              >
+                <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" aria-hidden></div>
 
-              <div className={`relative z-10 flex flex-col items-center text-left gap-4 p-6 ${m.leader ? 'lg:flex-row lg:items-center' : ''}`}> 
-                <div className={`rounded-full overflow-hidden shadow-md bg-white ${m.leader ? 'w-36 h-36 ring-4 ring-yellow-400' : 'w-28 h-28 ring-4 ring-white/60'}`}> 
-                  <img src={m.image} alt={`${m.name} — ${m.role}`} className="w-full h-full object-cover" />
-                </div>
+                <div className={`relative z-10 flex flex-col items-center text-left gap-4 p-6 ${m.leader ? 'lg:flex-row lg:items-center' : ''}`}> 
+                  <div className={`rounded-full overflow-hidden shadow-md bg-white ${m.leader ? 'w-36 h-36 ring-4 ring-yellow-400' : 'w-28 h-28 ring-4 ring-white/60'}`}> 
+                    <img src={m.image} alt={`${m.name} — ${m.role}`} className="w-full h-full object-cover" />
+                  </div>
 
-                <div className={`${m.leader ? 'lg:ml-6' : ''}`}> 
-                  <h3 className={`font-semibold drop-shadow-sm ${m.leader ? 'text-3xl text-white' : 'text-lg text-white'}`}>{m.name}</h3>
-                  {m.leader && <span className="text-sm text-white/80 block">{m.backend}</span>}
-                  {m.leader && <Star className="text-yellow-200 mt-1" size={24} />} 
-                  <p className={`font-medium ${m.leader ? 'text-lg text-white/90 mt-1' : 'text-sm text-white/90'}`}>{m.role}</p>
-                  <p className={`mt-2 ${m.leader ? 'text-base' : 'text-sm'} text-white/95 max-w-xl`}>{m.bio}</p>
+                  <div className={`${m.leader ? 'lg:ml-6' : ''}`}> 
+                    <h3 className={`font-semibold drop-shadow-sm ${m.leader ? 'text-3xl text-white' : 'text-lg text-white'}`}>{m.name}</h3>
+                    {m.leader && <span className="text-sm text-white/80 block">{m.backend}</span>}
+                    {m.leader && <Star className="text-yellow-200 mt-1" size={24} />} 
+                    <p className={`font-medium ${m.leader ? 'text-lg text-white/90 mt-1' : 'text-sm text-white/90'}`}>{m.role}</p>
+                    <p className={`mt-2 ${m.leader ? 'text-base' : 'text-sm'} text-white/95 max-w-xl`}>{m.bio}</p>
 
-                  <div className="mt-3 flex items-center gap-3">
-                    <a href="#" aria-label={`GitHub - ${m.name}`} className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/40">
-                      <Github size={16} />
-                    </a>
-                    <a href="#" aria-label={`LinkedIn - ${m.name}`} className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/40">
-                      <Linkedin size={16} />
-                    </a>
+                    <div className="mt-3 flex items-center gap-3">
+                      <a href="#" aria-label={`GitHub - ${m.name}`} className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/40">
+                        <Github size={16} />
+                      </a>
+                      <a href="#" aria-label={`LinkedIn - ${m.name}`} className="rounded-full bg-white/20 p-2 backdrop-blur-sm hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/40">
+                        <Linkedin size={16} />
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            ))}
+          </div>
         </div>
+      </section>
 
-      </div>
-    </section>
+      {/* Floating Theme Toggle Button */}
+      <motion.button
+        onClick={toggleTheme}
+        className={`fixed bottom-6 right-6 z-50 p-4 rounded-full backdrop-blur-md border transition-all duration-300 shadow-xl ${
+          darkMode 
+            ? 'bg-white/10 border-white/20 hover:bg-white/20' 
+            : 'bg-black/10 border-black/20 hover:bg-black/20'
+        }`}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        <motion.div
+          initial={false}
+          animate={{ rotate: darkMode ? 0 : 180 }}
+          transition={{ duration: 0.3 }}
+        >
+          {darkMode ? (
+            <Sun className="w-6 h-6 text-yellow-400" />
+          ) : (
+            <Moon className="w-6 h-6 text-blue-600" />
+          )}
+        </motion.div>
+      </motion.button>
+    </>
   );
 }
